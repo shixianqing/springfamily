@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.datasource.mapper.UserMapper" >
+  <resultMap id="BaseResultMap" type="com.example.datasource.model.User" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+    <result column="user_age" property="userAge" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, user_name, user_age, create_time, create_operator
+  </sql>
+  <insert id="save" parameterType="com.example.datasource.model.User">
+      insert into user(user_name,user_age) values (#{userName,jdbcType=VARCHAR},#{userAge,jdbcType=INTEGER})
+  </insert>
+</mapper>
