@@ -20,8 +20,8 @@ import java.util.Map;
  * @Date: 2019/5/22
  * @Description: 多数据员配置
  */
-//@Configuration
-//@MapperScan(sqlSessionFactoryRef = "sqlSessionFactory",basePackages = {"com.example.mapper"})
+@Configuration
+@MapperScan(sqlSessionFactoryRef = "sqlSessionFactory",basePackages = {"com.example.mapper"})
 public class MultiDataSourceConfig {
 
 
