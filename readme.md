@@ -1,4 +1,4 @@
-##登录h2数据库控制台
+## 登录h2数据库控制台
 http://localhost:8080/h2-console
 
 ## mybatis相关问题
@@ -37,3 +37,5 @@ http://localhost:8080/h2-console
 		      </selectKey>
        
     	  </insert>
+    	  
+### 生成扩展类插件待解决？？
