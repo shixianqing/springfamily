@@ -39,3 +39,10 @@ http://localhost:8080/h2-console
     	  </insert>
     	  
 ### 生成扩展类插件待解决？？
+
+### springboot继承mybatis，实体类别名设置、加载sqlMap文件
+
+        mybatis.mapper-locations=classpath:mapper/*.xml //加载sqlxml文件
+        mybatis.type-aliases-package=com.example.mapperExt.model //设置实体类所在包，实体类的别名即是实体类的名字
+        
+  mybatis.type-aliases-package=com.example.mapperExt.model    Coffee类在mapper.xml中的别名就叫Coffee
