@@ -13,7 +13,7 @@ import java.util.Date;
 /**
  * @Author:sxq
  * @Date: 2019/5/23
- * @Description:
+ * @Description: mapper.xml继承
  */
 @RestController
 public class MapperExtController {
