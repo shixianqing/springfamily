@@ -88,12 +88,14 @@ http://localhost:8080/h2-console
             }
 2. druid 监控
      1. 日志输出监控
+     
         . 配置文件参数
+        
               在druid-xxx.jar!/META-INF/druid-filter.properties文件中描述了这四种Filter的别名
 
             spring.datasource.druid.filters=stat,slf4j,wall
             spring.datasource.druid.filter.slf4j.enabled=true
-	. 配置logback.xml
+	    . 配置logback.xml
 
 
             <?xml version="1.0" encoding="UTF-8"?>
@@ -137,10 +139,15 @@ http://localhost:8080/h2-console
                     </root> 
             </configuration>
 
+
+
+
        
     2. druid控制台页面监控     
+      
         Druid内置提供了一个StatViewServlet用于展示Druid的统计信息。 这个StatViewServlet的用途包括： 提供监控信息展示的html页面、 提供监控信息的JSON API
     Druid内置提供一个WebStatFilter用于sql监控统计
+    
         1. 配置文件参数配置
                 spring.datasource.druid.filters=stat
 
