@@ -48,27 +48,31 @@ http://localhost:8080/h2-console
   mybatis.type-aliases-package=com.example.mapperExt.model    Coffee类在mapper.xml中的别名就叫Coffee
 
 ## druid
+
 1. springboot集成druid
+
     2. 配置文件参数配置
-           spring.datasource.druid.url=jdbc:h2:~/primary-database;AUTO_SERVER=TRUE;DB_CLOSE_ON_EXIT=FALSE
-             spring.datasource.druid.username=test1
-             spring.datasource.druid.password=test1
-             spring.datasource.druid.driver-class-name=org.h2.Driver
-             mybatis.mapper-locations=classpath:mapper/*.xml
-              mybatis.type-aliases-package=com.example.model
-              spring.datasource.type=com.alibaba.druid.pool.DruidDataSource
-                #最大活跃连接数
-                spring.datasource.druid.maxActive=20 
-                #初始化连接数
-                spring.datasource.druid.initialSize=1
-                #获取连接最大等待时间
-                spring.datasource.druid.maxWait=60000
-                #最小活跃连接数
-                spring.datasource.druid.minIdle=1
-                #配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
-                spring.datasource.druid.timeBetweenEvictionRunsMillis=2000 
-                #最小存活时间
-                spring.datasource.druid.minEvictableIdleTimeMillis=600000 
+    
+		   spring.datasource.druid.url=jdbc:h2:~/primary-database;AUTO_SERVER=TRUE;DB_CLOSE_ON_EXIT=FALSE
+		   spring.datasource.druid.username=test1
+		   spring.datasource.druid.password=test1
+		   spring.datasource.druid.driver-class-name=org.h2.Driver
+		   mybatis.mapper-locations=classpath:mapper/*.xml
+		   mybatis.type-aliases-package=com.example.model
+		   spring.datasource.type=com.alibaba.druid.pool.DruidDataSource
+		   #最大活跃连接数
+		   spring.datasource.druid.maxActive=20 
+		   #初始化连接数
+		   spring.datasource.druid.initialSize=1
+		   #获取连接最大等待时间
+		   spring.datasource.druid.maxWait=60000
+		   #最小活跃连接数
+		   spring.datasource.druid.minIdle=1
+		   #配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+		   spring.datasource.druid.timeBetweenEvictionRunsMillis=2000 
+		   #最小存活时间
+		   spring.datasource.druid.minEvictableIdleTimeMillis=600000 
+	   
     2. 代码配置
           
             @Configuration
@@ -87,6 +91,7 @@ http://localhost:8080/h2-console
             
             }
 2. druid 监控
+
      1. 日志输出监控
      
         . 配置文件参数
@@ -95,7 +100,8 @@ http://localhost:8080/h2-console
 
             spring.datasource.druid.filters=stat,slf4j,wall
             spring.datasource.druid.filter.slf4j.enabled=true
-	    . 配置logback.xml
+	    
+	 . 配置logback.xml
 
 
             <?xml version="1.0" encoding="UTF-8"?>
@@ -139,19 +145,18 @@ http://localhost:8080/h2-console
                     </root> 
             </configuration>
 
-
-
-
        
     2. druid控制台页面监控     
       
         Druid内置提供了一个StatViewServlet用于展示Druid的统计信息。 这个StatViewServlet的用途包括： 提供监控信息展示的html页面、 提供监控信息的JSON API
     Druid内置提供一个WebStatFilter用于sql监控统计
     
-        1. 配置文件参数配置
+      1. 配置文件参数配置
+	
                 spring.datasource.druid.filters=stat
 
-        2.    servlet配置
+      2. servlet配置
+      
                 @WebServlet(urlPatterns = {"/druid/*"},initParams = {
                 @WebInitParam(name = "loginPassword",value = "admin"),
                 @WebInitParam(name = "loginPassword",value = "admin"),
@@ -161,13 +166,15 @@ http://localhost:8080/h2-console
                 
                 }
 
-        3. filter配置
+      3. filter配置
+      
                 @WebFilter(urlPatterns = "/*",initParams = {
                 @WebInitParam(name = "exclusions",value = "*.js,*.gif,*.jpg,*.bmp,*.png,*.css,*.ico")
                 })
                 public class DruidFilter extends WebStatFilter {
                 }
  
-        4.  访问监控页面
+      4.访问监控页面
+	
             http://localhost:8080/druid/index.html
      
