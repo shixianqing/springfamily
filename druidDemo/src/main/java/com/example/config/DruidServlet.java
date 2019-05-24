@@ -16,5 +16,4 @@ import javax.servlet.annotation.WebServlet;
 })
 public class DruidServlet extends StatViewServlet {
 
-
 }
