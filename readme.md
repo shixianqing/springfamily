@@ -93,7 +93,7 @@ http://localhost:8080/h2-console
 
             spring.datasource.druid.filters=stat,slf4j,wall
             spring.datasource.druid.filter.slf4j.enabled=true
-. 配置logback.xml
+	. 配置logback.xml
 
 
             <?xml version="1.0" encoding="UTF-8"?>
