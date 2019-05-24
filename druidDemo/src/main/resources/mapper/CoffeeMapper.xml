@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.mapper.CoffeeExtMapper" >
+  <resultMap id="BaseResultMap" type="Coffee" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="price" property="price" jdbcType="DECIMAL" />
+    <result column="create_time  " property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time " property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT * FROM t_coffee
+    </select>
+
+    <insert id="insert" parameterType="Coffee">
+      <selectKey keyColumn="id" keyProperty="id" resultType="int">
+          SELECT LAST_INSERT_ID()
+      </selectKey>
+        insert into t_coffee(name,price,create_time)
+        values
+          (#{name,jdbcType=VARCHAR},#{price,jdbcType=DECIMAL},#{createTime,jdbcType=TIMESTAMP})
+    </insert>
+   <!-- <insert id="insert" parameterType="Coffee" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into t_coffee(name,price,create_time)
+        values
+          (#{name,jdbcType=VARCHAR},#{price,jdbcType=DECIMAL},#{createTime,jdbcType=TIMESTAMP})
+    </insert>-->
+</mapper>
