@@ -206,12 +206,13 @@ http://localhost:8080/h2-console
            问题：配置statServlet后，访问监控页面报404。<br>
            原因：经过一番折腾，发现是servlet没有被注入进来。<br>
            解决：使用@ServletComponentScan注解，扫描servlet所在包，代码配置：<br>
+	   
            
-            @SpringBootApplication
-            @ServletComponentScan("com.example.config")
-            public class DruidApplication {
-            
-                public static void main(String[] args) {
-                    SpringApplication.run(DruidApplication.class,args);
-                }
-            }
+	    @SpringBootApplication
+	    @ServletComponentScan("com.example.config")
+	    public class DruidApplication {
+
+		public static void main(String[] args) {
+		    SpringApplication.run(DruidApplication.class,args);
+		}
+	    }
