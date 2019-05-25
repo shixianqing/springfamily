@@ -94,7 +94,7 @@ http://localhost:8080/h2-console
 
      1. 日志输出监控
      
-        - 配置文件参数
+        1. 配置文件参数
         
             在druid-xxx.jar!/META-INF/druid-filter.properties文件中描述了这四种Filter的别名
 
@@ -103,7 +103,7 @@ http://localhost:8080/h2-console
 	    
 	 	
 
-		- 配置logback.xml
+		2. 配置logback.xml
 		
 
 
@@ -161,9 +161,9 @@ http://localhost:8080/h2-console
       2. servlet配置
       
                 @WebServlet(urlPatterns = {"/druid/*"},initParams = {
-                @WebInitParam(name = "loginPassword",value = "admin"),
-                @WebInitParam(name = "loginPassword",value = "admin"),
-                @WebInitParam(name = "resetEnable",value = "false")
+	                @WebInitParam(name = "loginPassword",value = "admin"),
+	                @WebInitParam(name = "loginPassword",value = "admin"),
+	                @WebInitParam(name = "resetEnable",value = "false")
                 })
                 public class DruidServlet extends StatViewServlet {
                 
@@ -172,7 +172,7 @@ http://localhost:8080/h2-console
       3. filter配置
       
                 @WebFilter(urlPatterns = "/*",initParams = {
-                @WebInitParam(name = "exclusions",value = "*.js,*.gif,*.jpg,*.bmp,*.png,*.css,*.ico")
+                	@WebInitParam(name = "exclusions",value = "*.js,*.gif,*.jpg,*.bmp,*.png,*.css,*.ico")
                 })
                 	public class DruidFilter extends WebStatFilter {
                 }
