@@ -91,6 +91,9 @@ http://localhost:8080/h2-console
             
             }
 2. druid 监控
+	
+	druid github地址<a href='https://github.com/alibaba/druid' target='_blank'>请点击这里</a>
+
 
      1. 日志输出监控
      
