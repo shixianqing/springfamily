@@ -6,6 +6,8 @@
     <modules>
         <module>datasourcedemo</module>
         <module>druidDemo</module>
+        <module>springoauth2demo</module>
+        <module>springsecurity-demo</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
