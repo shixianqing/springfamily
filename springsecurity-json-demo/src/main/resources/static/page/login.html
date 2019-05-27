@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<meta charset="utf-8" />
+		<title>登录页面 - 统一开发平台 - UI库</title>
+		<meta name="description" content="Restyling jQuery UI Widgets and Elements" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+        <script type="text/javascript" src="../assets/jquery.min.js"></script>
+	</head>
+	</head>
+	<body>
+
+        <label>用户名：</label>
+        <input type="text" name="username" placeholder="请输入用户名" class="name"><br>
+        <label>密码：</label>
+        <input type="password" name="password" placeholder="请输入密码" class="pwd"><br>
+        <button id="submit">登录</button>
+	</body>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#submit").click(function () {
+                var name = $(".name").val();
+                var pwd = $(".pwd").val();
+                $.ajax({
+                    type:"POST",
+                    url : "/login",
+                    data : JSON.stringify({"userName" : name,"password" : pwd}),
+                    // dataType : "application/json",
+                    success : function (data) {
+                        console.log(data);
+                        if (data && data.code == 200){
+                            window.location.href = "index.html"
+                        } else {
+                            alert(data.data)
+                        }
+                    },
+                    contentType : "application/json"
+                })
+            })
+        })
+    </script>
+</html>
