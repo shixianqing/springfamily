@@ -397,10 +397,9 @@ FilterChainProxy 负责所有过滤器的执行调度
 
 	![](https://i.imgur.com/qqpwXvD.png)
 
-
-如图所示，这几个类是用户认证的核心
-
-ProviderManager实现了AuthenticationManager，UsernamePasswordAuthenticationFilter类执行`getAuthenticationManager().authenticate(authRequest);`实际上执行的是ProviderManager的authenticate方法，ProviderManager部分源码如下：
+	如图所示，这几个类是用户认证的核心
+	
+	ProviderManager实现了AuthenticationManager，UsernamePasswordAuthenticationFilter类执行`getAuthenticationManager().authenticate(authRequest);`实际上执行的是ProviderManager的authenticate方法，ProviderManager部分源码如下：
    
    
    	public Authentication authenticate(Authentication authentication)
@@ -446,7 +445,7 @@ ProviderManager实现了AuthenticationManager，UsernamePasswordAuthenticationFi
 		
 	}
 
-`ProviderManager`的`authenticate`方法中调用了`AbstractUserDetailsAuthenticationProvider`的`authenticate`方法，`AbstractUserDetailsAuthenticationProvider`部分源码如下：
+	`ProviderManager`的`authenticate`方法中调用了`AbstractUserDetailsAuthenticationProvider`的`authenticate`方法，`AbstractUserDetailsAuthenticationProvider`部分源码如下：
 	
 	public Authentication authenticate(Authentication authentication)
 			throws AuthenticationException {
@@ -454,19 +453,19 @@ ProviderManager实现了AuthenticationManager，UsernamePasswordAuthenticationFi
 				() -> messages.getMessage(
 						"AbstractUserDetailsAuthenticationProvider.onlySupports",
 						"Only UsernamePasswordAuthenticationToken is supported"));
-
+	
 		// Determine username
 		String username = (authentication.getPrincipal() == null) ? "NONE_PROVIDED"
 				: authentication.getName();
-
+	
 		boolean cacheWasUsed = true;
 		
 		//从用户缓存中获取用户认证信息
 		UserDetails user = this.userCache.getUserFromCache(username);
-
+	
 		if (user == null) {
 			cacheWasUsed = false;
-
+	
 			try {
 				//如果缓存中获取不到，则调UserDetailsService的loadUserByName方法，获取认证信息
 				user = retrieveUser(username,
@@ -474,7 +473,7 @@ ProviderManager实现了AuthenticationManager，UsernamePasswordAuthenticationFi
 			}
 			catch (UsernameNotFoundException notFound) {
 				logger.debug("User '" + username + "' not found");
-
+	
 				if (hideUserNotFoundExceptions) {
 					throw new BadCredentialsException(messages.getMessage(
 							"AbstractUserDetailsAuthenticationProvider.badCredentials",
@@ -484,11 +483,11 @@ ProviderManager实现了AuthenticationManager，UsernamePasswordAuthenticationFi
 					throw notFound;
 				}
 			}
-
+	
 			Assert.notNull(user,
 					"retrieveUser returned null - a violation of the interface contract");
 		}
-
+	
 		try {
 			
 			/**
@@ -521,16 +520,54 @@ ProviderManager实现了AuthenticationManager，UsernamePasswordAuthenticationFi
 		
 		//执行的是内部类DefaultPostAuthenticationChecks中的check方法，校验密码是否过期
 		postAuthenticationChecks.check(user);
-
+	
 		if (!cacheWasUsed) {
 			this.userCache.putUserInCache(user);
 		}
-
+	
 		Object principalToReturn = user;
-
+	
 		if (forcePrincipalAsString) {
 			principalToReturn = user.getUsername();
 		}
-
+	
+		//将认证信息重新封装到Authentication对象中
 		return createSuccessAuthentication(principalToReturn, authentication, user);
+	}
+
+5. `FilterSecurityInterceptor`这个过滤器授权验证的。`FilterSecurityInterceptor`的工作流程引用一下，可以理解如下：`FilterSecurityInterceptor`从`SecurityContextHolder`中获取`Authentication`对象，然后比对***用户拥有的权限***和***资源所需的权限***。前者可以通过`Authentication`对象直接获得，而后者则需要引入我们之前一直未提到过的两个类：`SecurityMetadataSource`，`AccessDecisionManager`。`SecurityMetadataSource`封装了资源所需要的权限，`AccessDecisionManager`处理权限比对。部分源码如下：
+	
+		public void doFilter(ServletRequest request, ServletResponse response,
+				FilterChain chain) throws IOException, ServletException {
+			FilterInvocation fi = new FilterInvocation(request, response, chain);
+			invoke(fi);
+		}
+
+		public void invoke(FilterInvocation fi) throws IOException, ServletException {
+		if ((fi.getRequest() != null)
+				&& (fi.getRequest().getAttribute(FILTER_APPLIED) != null)
+				&& observeOncePerRequest) {
+			// filter already applied to this request and user wants us to observe
+			// once-per-request handling, so don't re-do security checking
+			fi.getChain().doFilter(fi.getRequest(), fi.getResponse());
+		}
+		else {
+			// first time this request being called, so perform security checking
+			if (fi.getRequest() != null && observeOncePerRequest) {
+				fi.getRequest().setAttribute(FILTER_APPLIED, Boolean.TRUE);
+			}
+
+			//调用父类AbstractSecurityInterceptor的beforeInvocation方法，
+			//主要判断用户权限与资源权限是否匹配
+			InterceptorStatusToken token = super.beforeInvocation(fi);
+
+			try {
+				fi.getChain().doFilter(fi.getRequest(), fi.getResponse());
+			}
+			finally {
+				super.finallyInvocation(token);
+			}
+
+			super.afterInvocation(token, null);
+		}
 	}
