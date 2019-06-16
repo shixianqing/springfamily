@@ -2,6 +2,7 @@ package com.example.handler;
 
 import com.alibaba.fastjson.JSONObject;
 import com.example.common.response.MetaResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -16,12 +17,13 @@ import java.io.IOException;
  * @Description:
  * 授权失败处理器
  **/
+@Slf4j
 public class CustomAuthFailHandler implements AuthenticationFailureHandler {
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
                                         AuthenticationException exception) throws IOException {
         response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
-        String message = exception.getMessage();
+        log.error("{}",exception);
         String respMsg = JSONObject.toJSONString(MetaResponse.error("用户名或密码不正确！"));
         response.getOutputStream().write(respMsg.getBytes());
     }

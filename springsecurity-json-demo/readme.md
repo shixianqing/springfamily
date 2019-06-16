@@ -398,4 +398,139 @@ FilterChainProxy 负责所有过滤器的执行调度
 	![](https://i.imgur.com/qqpwXvD.png)
 
 
-如图所示，这几个类是用户认证的核心类
+如图所示，这几个类是用户认证的核心
+
+ProviderManager实现了AuthenticationManager，UsernamePasswordAuthenticationFilter类执行`getAuthenticationManager().authenticate(authRequest);`实际上执行的是ProviderManager的authenticate方法，ProviderManager部分源码如下：
+   
+   
+   	public Authentication authenticate(Authentication authentication)
+			throws AuthenticationException {
+		//省略部分代码
+		Class<? extends Authentication> toTest = authentication.getClass();
+		for (AuthenticationProvider provider : getProviders()) {
+			
+			//判断AuthenticationProvider是否支持authentication
+			//表单提交，执行的AbstractUserDetailsAuthenticationProvider的supports方法
+			if (!provider.supports(toTest)) {
+				continue;
+			}
+
+			//省略部分代码
+		
+			try {
+				
+				//调用AbstractUserDetailsAuthenticationProvider的authenticate方法
+				result = provider.authenticate(authentication);
+
+				if (result != null) {
+					copyDetails(authentication, result);
+					break;
+				}
+			}
+			catch (AccountStatusException e) {
+				prepareException(e, authentication);
+				// SEC-546: Avoid polling additional providers if auth failure is due to
+				// invalid account status
+				throw e;
+			}
+			catch (InternalAuthenticationServiceException e) {
+				prepareException(e, authentication);
+				throw e;
+			}
+			catch (AuthenticationException e) {
+				lastException = e;
+			}
+		}
+
+		//省略部分代码
+		
+	}
+
+`ProviderManager`的`authenticate`方法中调用了`AbstractUserDetailsAuthenticationProvider`的`authenticate`方法，`AbstractUserDetailsAuthenticationProvider`部分源码如下：
+	
+	public Authentication authenticate(Authentication authentication)
+			throws AuthenticationException {
+		Assert.isInstanceOf(UsernamePasswordAuthenticationToken.class, authentication,
+				() -> messages.getMessage(
+						"AbstractUserDetailsAuthenticationProvider.onlySupports",
+						"Only UsernamePasswordAuthenticationToken is supported"));
+
+		// Determine username
+		String username = (authentication.getPrincipal() == null) ? "NONE_PROVIDED"
+				: authentication.getName();
+
+		boolean cacheWasUsed = true;
+		
+		//从用户缓存中获取用户认证信息
+		UserDetails user = this.userCache.getUserFromCache(username);
+
+		if (user == null) {
+			cacheWasUsed = false;
+
+			try {
+				//如果缓存中获取不到，则调UserDetailsService的loadUserByName方法，获取认证信息
+				user = retrieveUser(username,
+						(UsernamePasswordAuthenticationToken) authentication);
+			}
+			catch (UsernameNotFoundException notFound) {
+				logger.debug("User '" + username + "' not found");
+
+				if (hideUserNotFoundExceptions) {
+					throw new BadCredentialsException(messages.getMessage(
+							"AbstractUserDetailsAuthenticationProvider.badCredentials",
+							"Bad credentials"));
+				}
+				else {
+					throw notFound;
+				}
+			}
+
+			Assert.notNull(user,
+					"retrieveUser returned null - a violation of the interface contract");
+		}
+
+		try {
+			
+			/**
+				执行内部类DefaultPreAuthenticationChecks类中的check方法
+				校验账户是否被锁定、账户是否可用、账户是否过期
+			**/
+			preAuthenticationChecks.check(user);
+			
+			//该方法是抽象方法，执行的是DaoAuthenticationProvider的additionalAuthenticationChecks方法
+			//检验用户密码
+			additionalAuthenticationChecks(user,
+					(UsernamePasswordAuthenticationToken) authentication);
+		}
+		catch (AuthenticationException exception) {
+			if (cacheWasUsed) {
+				// There was a problem, so try again after checking
+				// we're using latest data (i.e. not from the cache)
+				cacheWasUsed = false;
+				user = retrieveUser(username,
+						(UsernamePasswordAuthenticationToken) authentication);
+				preAuthenticationChecks.check(user);
+				additionalAuthenticationChecks(user,
+						(UsernamePasswordAuthenticationToken) authentication);
+			}
+			else {
+				throw exception;
+			}
+		}
+		
+		
+		//执行的是内部类DefaultPostAuthenticationChecks中的check方法，校验密码是否过期
+		postAuthenticationChecks.check(user);
+
+		if (!cacheWasUsed) {
+			this.userCache.putUserInCache(user);
+		}
+
+		Object principalToReturn = user;
+
+		if (forcePrincipalAsString) {
+			principalToReturn = user.getUsername();
+		}
+
+		return createSuccessAuthentication(principalToReturn, authentication, user);
+	}
