@@ -62,6 +62,12 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/page/login.html","/page/error.html","/assets/*")
                 .permitAll()
                 .anyRequest()
+                //任何请求资源的角色是ADMIN
+                .hasAnyRole("ADMIN")
+                .and()
+                .authorizeRequests()
+                .anyRequest()
+                //任何请求资源需要认证
                 .authenticated()
                 .and()
                 .formLogin()
